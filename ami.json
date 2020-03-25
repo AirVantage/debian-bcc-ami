@@ -1,0 +1,44 @@
+{
+    "variables": {
+        "build_instance": "t3.small",
+        "build_region": "eu-west-1",
+        "target_regions": "eu-west-1,us-west2",
+        "source_ami": "ami-c0ffee",
+        "ami_name": "debian-bcc-snapshot",
+        "manifest": "manifest-snapshot.json"
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "region": "{{user `build_region`}}",
+            "source_ami": "{{user `source_ami`}}",
+            "instance_type": "{{user `build_instance`}}",
+            "spot_price": "auto",
+            "subnet_id": "subnet-fc8ae299",
+            "associate_public_ip_address": true,
+            "ssh_interface": "public_ip",
+            "ssh_username": "admin",
+            "ami_name": "{{user `ami_name`}}",
+            "ami_regions": "{{user `target_regions`}}",
+            "ami_groups": ["all"]
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [ "sleep 20" ]
+        },
+        {
+            "type": "shell",
+            "script": "customize-ami.sh",
+            "execute_command": "sudo bash {{ .Path }}"
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "manifest",
+            "strip_path": true,
+            "output": "{{user `manifest`}}"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+name: AutoUpdate
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+
+jobs:
+  build_ami:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Lookup for new Debian AMI releases
+      run: ./build_latest.sh
+      env:
+        AWS_REGION: eu-west-1
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

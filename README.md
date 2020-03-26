@@ -1,5 +1,8 @@
 # Debian BCC AMI
 
+![AutoUpdate](https://github.com/AirVantage/debian-bcc-ami/workflows/AutoUpdate/badge.svg)
+[![Find AMI](https://img.shields.io/badge/AWS-AMI-yellow)](https://eu-west-1.console.aws.amazon.com/ec2/v2/home?#Images:visibility=public-images;search=debian-bcc;sort=name)
+
 This is a modification of the official [Debian](https://wiki.debian.org/Cloud/AmazonEC2Image) 10 Buster AMI with [BCC](https://github.com/iovisor/bcc)
 and kernel headers pre-installed. It simplifies and speeds up the deployment of eBPF programs, like
 [SBULB](https://github.com/AirVantage/sbulb) for instance ;)

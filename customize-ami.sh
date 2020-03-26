@@ -28,3 +28,6 @@ case \$- in *i*)
   ;;
 esac
 __
+
+# Reset cloud-init.
+cloud-init clean --logs

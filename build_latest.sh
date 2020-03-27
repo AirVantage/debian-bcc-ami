@@ -2,9 +2,7 @@
 set -euxo pipefail
 
 AMI_NAME=debian-bcc-10
-REGIONS=eu-west-1,us-west-2
 SOURCE_AMI_NAME=debian-10
-BUILD_INSTANCE=t3.small
 BUILD_REGION=${AWS_REGION:-eu-west-1}
 OWNER_ID=018471812555
 OWNER_ID_DEBIAN=136693071363
@@ -40,21 +38,16 @@ type aws jq packer >/dev/null || source deps.sh
 debian=$(get_latest_debian_ami $OWNER_ID_DEBIAN $BUILD_REGION $SOURCE_AMI_NAME)
 debian_version=$(get_image_version <<<$debian)
 
-# Get the latest debian-bcc release.
+# Get the latest debian-bcc release (which might not exist yet).
 debbcc=$(get_latest_debian_ami $OWNER_ID $BUILD_REGION $AMI_NAME)
-debbcc_version=$(get_image_version <<<$debbcc)
+debbcc_version=$(get_image_version <<<$debbcc || true)
 
-if [ "$debian_version" = "$debbcc_version" ]; then
-  echo "No new release to build."
-  exit 0
-fi
+# Exit if we have already built the latest version.
+[ "$debian_version" != "$debbcc_version" ] || exit 0
 
 packer build \
   -color=false \
-  -var ami_name=$AMI_NAME-amd64-hvm-ebs-$debbcc_version \
+  -var ami_name=$AMI_NAME-amd64-hvm-ebs-$debian_version \
   -var source_ami=$(get_image_id <<<$debian) \
-  -var build_instance=$BUILD_INSTANCE \
   -var build_region=$BUILD_REGION \
-  -var target_regions=$REGIONS \
-  -var manifest=manifest-$debbcc_version.json \
   ami.json

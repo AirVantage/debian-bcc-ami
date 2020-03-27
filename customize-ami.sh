@@ -29,5 +29,19 @@ case \$- in *i*)
 esac
 __
 
-# Reset cloud-init.
+# Cleanup.
 cloud-init clean --logs
+
+rm -f /etc/resolv.conf \
+      /etc/mailname \
+      /var/lib/dbus/machine-id \
+      /var/lib/dhcp/*
+
+rm -rf /var/cache/apt/*
+rm -rf /var/lib/apt/lists/*
+
+: > /etc/machine-id
+echo debian > /etc/hostname
+mkdir -p /var/cache/apt/archives/partial
+
+shred --remove /etc/ssh/ssh_host_*

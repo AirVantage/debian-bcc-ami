@@ -1,5 +1,6 @@
 #!/bin/sh -eu
 
+. /etc/os-release
 export DEBIAN_FRONTEND=noninteractive
 
 # Prevent kernel updates.
@@ -9,11 +10,11 @@ apt-mark hold linux-*
 apt-get update
 apt-get -qq install --no-install-recommends jq linux-headers-$(uname -r) python3-bpfcc
 
+# Try to get the latest BCC release from backports.
+apt-get -qq -t ${VERSION_CODENAME}-backports install --no-install-recommends python3-bpfcc || true
+
 # Fix Debian's ugly motd.
-(
-  . /etc/os-release
-  echo $PRETTY_NAME >/etc/motd
-)
+echo $PRETTY_NAME >/etc/motd
 
 # Display failed systemd units when the user logs in.
 cat >/etc/profile.d/failed-units.sh <<__
